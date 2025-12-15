@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+//signup
 
 public class SignupActivity extends AppCompatActivity {
 
