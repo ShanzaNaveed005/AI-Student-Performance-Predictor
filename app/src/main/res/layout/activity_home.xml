@@ -9,7 +9,7 @@
     android:background="@drawable/bg_gradient"
     tools:context=".HomeActivity">
 
-    <!-- App Logo -->
+    <!-- Studentpredictor app Logo -->
     <ImageView
         android:id="@+id/imgLogo"
         android:layout_width="150dp"
