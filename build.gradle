@@ -1,4 +1,12 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+// Root build.gradle (Project: AIStudentPerformancePredictor)
+
 plugins {
-alias(libs.plugins.android.application) apply false
+    // Define the Android Application plugin (assuming it's here)
+    alias(libs.plugins.android.application) apply false
+
+    // ADD or CORRECT this line for the Google Services plugin:
+    id 'com.google.gms.google-services' version '4.4.1' apply false
+    // Note: '4.4.1' is a placeholder for a modern, stable version.
+    // Use the latest one found on the Firebase documentation (e.g., 4.4.1 is stable)
 }
+// ... rest of the file (if any)

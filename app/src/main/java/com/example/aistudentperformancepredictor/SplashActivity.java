@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.FirebaseApp;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -12,10 +13,14 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Initialize Firebase
+        FirebaseApp.initializeApp(this);
+
         setContentView(R.layout.activity_splash);
 
+        // Delay and move to Home or Login activity
         new Handler().postDelayed(() -> {
-            // Move to the Home or Login activity
             Intent intent = new Intent(SplashActivity.this, HomeActivity.class);
             startActivity(intent);
             finish();

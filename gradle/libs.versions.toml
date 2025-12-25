@@ -8,6 +8,8 @@ material = "1.13.0"
 activity = "1.12.1"
 constraintlayout = "2.2.1"
 
+androidxTestCore = "1.5.0" # A known stable version
+
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
