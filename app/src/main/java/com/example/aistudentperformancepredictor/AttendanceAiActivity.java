@@ -1,14 +1,12 @@
 package com.example.aistudentperformancepredictor;
-import com.example.aistudentperformancepredictor.AttendanceModel;
 
-
+import android.content.Intent; // Ye import zaroori hai
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -16,12 +14,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class AttendanceAiActivity extends AppCompatActivity {
 
-    // UI components
     private TextInputEditText etAttendance;
     private TextView tvRisk, tvSuggestion;
     private Button btnAnalyze;
+    private ImageView imgStatus;
 
-    // Firebase
     private DatabaseReference attendanceRef;
     private FirebaseAuth mAuth;
 
@@ -30,87 +27,78 @@ public class AttendanceAiActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attendance_ai);
 
-        // ---------- Firebase ----------
         mAuth = FirebaseAuth.getInstance();
-        attendanceRef = FirebaseDatabase.getInstance()
-                .getReference("AttendanceAI");
+        attendanceRef = FirebaseDatabase.getInstance().getReference("AttendanceData");
 
-        // ---------- UI Binding ----------
         etAttendance = findViewById(R.id.etAttendance);
         tvRisk = findViewById(R.id.tvRisk);
         tvSuggestion = findViewById(R.id.tvSuggestion);
         btnAnalyze = findViewById(R.id.btnAnalyze);
+        imgStatus = findViewById(R.id.imgStatus);
 
-        // ---------- Button Click ----------
         btnAnalyze.setOnClickListener(v -> analyzeAttendance());
     }
 
     private void analyzeAttendance() {
-
-        // Validation
-        if (etAttendance.getText() == null ||
-                etAttendance.getText().toString().trim().isEmpty()) {
-
-            Toast.makeText(this,
-                    "Please enter attendance percentage",
-                    Toast.LENGTH_SHORT).show();
+        String input = etAttendance.getText().toString().trim();
+        if (input.isEmpty()) {
+            Toast.makeText(this, "Enter percentage", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int attendance = Integer.parseInt(
-                etAttendance.getText().toString().trim());
+        int attendance = Integer.parseInt(input);
+        if (attendance > 100) {
+            Toast.makeText(this, "Percentage cannot exceed 100", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String risk;
         String suggestion;
+        int statusIcon;
+        int statusColor;
 
-        // ---------- AI LOGIC (Rule-based) ----------
-        if (attendance < 60) {
-            risk = "High Risk ❌";
-            suggestion = "Your attendance is critically low. Attend all remaining classes immediately.";
-        } else if (attendance < 75) {
-            risk = "Medium Risk ⚠️";
-            suggestion = "Attendance is borderline. Improve consistency to avoid issues.";
+        // ---------- ADVANCED AI LOGIC ----------
+        if (attendance < 65) {
+            risk = "CRITICAL RISK ❌";
+            suggestion = "AI Prediction: High chance of failing. Your attendance is below the required threshold.";
+            statusIcon = android.R.drawable.ic_delete;
+            statusColor = 0xFFFF0000; // Red
+        } else if (attendance < 85) {
+            risk = "MODERATE RISK ⚠️";
+            suggestion = "AI Prediction: Performance stable, but consistency is needed to secure an 'A'.";
+            statusIcon = android.R.drawable.ic_dialog_alert;
+            statusColor = 0xFFFFA500; // Orange
         } else {
-            risk = "Safe ✅";
-            suggestion = "Excellent attendance. Keep maintaining this consistency.";
+            risk = "PERFORMANCE OPTIMIZED ✅";
+            suggestion = "AI Prediction: Excellent! Your attendance increases 'A+' probability by 30%.";
+            statusIcon = android.R.drawable.ic_input_add;
+            statusColor = 0xFF22C55E; // Green
         }
 
-        // ---------- Show Result on Screen ----------
-        tvRisk.setText("Risk Level: " + risk);
+        tvRisk.setText(risk);
+        tvRisk.setTextColor(statusColor);
         tvSuggestion.setText(suggestion);
+        imgStatus.setImageResource(statusIcon);
+        imgStatus.setColorFilter(statusColor);
 
-        // ---------- Save to Firebase ----------
-        saveAttendanceToFirebase(attendance, risk, suggestion);
+        saveToFirebase(attendance, risk, suggestion);
     }
 
-    private void saveAttendanceToFirebase(int attendance,
-                                          String risk,
-                                          String suggestion) {
+    private void saveToFirebase(int attendance, String risk, String suggestion) {
+        if (mAuth.getCurrentUser() == null) return;
 
-        String userId = mAuth.getCurrentUser() != null
-                ? mAuth.getCurrentUser().getUid()
-                : "anonymous";
+        String userId = mAuth.getCurrentUser().getUid();
+        AttendanceModel model = new AttendanceModel(userId, attendance, risk, suggestion, System.currentTimeMillis());
 
-        String recordId = attendanceRef.push().getKey();
+        // Save data and then navigate to ResultActivity
+        attendanceRef.child(userId).setValue(model)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(AttendanceAiActivity.this, "AI Analysis Updated!", Toast.LENGTH_SHORT).show();
 
-        AttendanceModel model = new AttendanceModel(
-                userId,
-                attendance,
-                risk,
-                suggestion,
-                System.currentTimeMillis()
-        );
-
-        if (recordId != null) {
-            attendanceRef.child(recordId).setValue(model)
-                    .addOnSuccessListener(unused ->
-                            Toast.makeText(this,
-                                    "Attendance analysis saved",
-                                    Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this,
-                                    "Firebase error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show());
-        }
+                    // Direct Result screen par le jayen analysis ke baad
+                    Intent intent = new Intent(AttendanceAiActivity.this, ResultActivity.class);
+                    startActivity(intent);
+                })
+                .addOnFailureListener(e -> Toast.makeText(AttendanceAiActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

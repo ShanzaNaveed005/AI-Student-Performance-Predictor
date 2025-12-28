@@ -48,6 +48,22 @@ public class StudentInputActivity extends AppCompatActivity {
 
         // Add first row by default
         addSubjectRow();
+
+        // Toolbar bind karein
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+// Ab ye lines kaam karengi
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        }
+    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private void addSubjectRow() {

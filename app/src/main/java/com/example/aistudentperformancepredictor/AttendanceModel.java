@@ -1,25 +1,18 @@
 package com.example.aistudentperformancepredictor;
 
 public class AttendanceModel {
-
     public String userId;
-    public int attendance;
-    public String risk;
+    public int attendancePercentage;
+    public String riskLevel;
     public String suggestion;
     public long timestamp;
 
-    // EMPTY constructor REQUIRED for Firebase
-    public AttendanceModel() {
-    }
+    public AttendanceModel() {} // Required for Firebase
 
-    public AttendanceModel(String userId,
-                           int attendance,
-                           String risk,
-                           String suggestion,
-                           long timestamp) {
+    public AttendanceModel(String userId, int attendancePercentage, String riskLevel, String suggestion, long timestamp) {
         this.userId = userId;
-        this.attendance = attendance;
-        this.risk = risk;
+        this.attendancePercentage = attendancePercentage;
+        this.riskLevel = riskLevel;
         this.suggestion = suggestion;
         this.timestamp = timestamp;
     }
