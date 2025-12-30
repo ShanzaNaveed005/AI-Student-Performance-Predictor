@@ -39,7 +39,8 @@ public class ChatbotActivity extends AppCompatActivity {
         // 1. Gemini AI Setup (Yahan apni key lagayein)
         // "models/" hata kar sirf model ka naam likhein
         // Use this exact string without "models/" prefix
-        GenerativeModel gm = new GenerativeModel("gemini-1.5-flash", "AIzaSyDNQFeWcDqluEThg5OUguRuPx6wre0qmF0");
+        // Ye 1.0 version ka sabse stable model hai
+        GenerativeModel gm = new GenerativeModel("gemini-2.5-flash", "AIzaSyDiPyoF6cdqqfAPYBB_D790R_liYfV1_Bk");
         model = GenerativeModelFutures.from(gm);
 
         rvChat = findViewById(R.id.rvChat);
